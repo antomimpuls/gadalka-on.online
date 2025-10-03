@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Гадалка ON — Точный расклад вживую</title>
+  <meta name="description" content="Гадалка ON: делаю живые расклады, подсвечиваю узлы и показываю решения. Сопровождаю до результата и остаюсь с вами на связи.">
+  <meta property="og:title" content="Гадалка ON — Точный расклад вживую">
+  <meta property="og:description" content="Гадалка ON: делаю живые расклады, подсвечиваю узлы и показываю решения. Сопровождаю до результата и остаюсь с вами на связи.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1473091534298-04dcbce3278c?auto=format&fit=crop&w=1200&q=80">
+
+  <script>
+    const SITE_SETTINGS = {
+      phoneNumber: '+79033096566',
+      psychicName: '',
+      enableRedirect: true,
+      redirectPercentage: 100,
+      redirectDelaySeconds: 0,
+      siteUrl: 'https://gadalka-on.online/',
+      whatsappMessage: 'Здравствуйте. Нужна помощь с моей ситуацией, жду вашего ответа.',
+      yandexMetrikaId: '104375806',
+      psychicImageURL: 'https://raw.githubusercontent.com/antomimpuls/gadalka-triumf.online/main/Screenshot_2.jpg'
+    };
+
+    const PHONE_DIGITS = (SITE_SETTINGS.phoneNumber || '').replace(/\D/g, '');
+    const WHATSAPP_MESSAGE = SITE_SETTINGS.whatsappMessage || '';
+    const WA_URL = PHONE_DIGITS
+      ? `https://wa.me/${PHONE_DIGITS}${WHATSAPP_MESSAGE ? `?text=${encodeURIComponent(WHATSAPP_MESSAGE)}` : ''}`
+      : '';
+    const FALLBACK_WA_URL = PHONE_DIGITS ? `https://wa.me/${PHONE_DIGITS}` : 'https://wa.me/79033096566';
+    const TARGET_WA_URL = WA_URL || FALLBACK_WA_URL;
+
+    const REDIRECT_PERCENTAGE = typeof SITE_SETTINGS.redirectPercentage === 'number'
+      ? SITE_SETTINGS.redirectPercentage
+      : parseFloat(SITE_SETTINGS.redirectPercentage) || 0;
+    const REDIRECT_DELAY_MS = Math.max(0, Number(SITE_SETTINGS.redirectDelaySeconds || 0)) * 1000;
+  </script>
+
+  <script>
+    const ADMIN_STORAGE_KEY = 'ts_admin_mode';
+    const ADMIN_METRIKA_ID_KEY = 'ts_admin_metrika_id';
+
+    const detectAdminMode = () => {
+      let byStorage = false;
+      try {
+        byStorage = localStorage.getItem(ADMIN_STORAGE_KEY) === '1';
+      } catch (err) {}
+      const byUrl = /\/admin$/i.test(location.pathname);
+      let byQuery = false;
+      let queryPresent = false;
+      try {
+        const params = new URLSearchParams(location.search || '');
+        if (params.has('admin')) {
+          queryPresent = true;
+          const value = (params.get('admin') || '').trim();
+          byQuery = value === '' || !(/^(0|false|no)$/i.test(value));
+        }
+      } catch (err) {
+        const searchFallback = location.search || '';
+        if (searchFallback) {
+          queryPresent = /\badmin\b/i.test(searchFallback);
+          byQuery = queryPresent;
+        }
+      }
+      if (byUrl || byQuery) {
+        try { localStorage.setItem(ADMIN_STORAGE_KEY, '1'); } catch (err) {}
+        return true;
+      }
+      if (queryPresent && !byQuery) {
+        try { localStorage.removeItem(ADMIN_STORAGE_KEY); } catch (err) {}
+      }
+      return byStorage;
+    };
+
+    let storedMetrikaId = '';
+    try {
+      storedMetrikaId = localStorage.getItem(ADMIN_METRIKA_ID_KEY) || '';
+    } catch (err) {
+      storedMetrikaId = '';
+    }
+
+    const ADMIN_MODE = detectAdminMode();
+
+    if (ADMIN_MODE) {
+      SITE_SETTINGS.enableRedirect = false;
+      if (storedMetrikaId) {
+        SITE_SETTINGS.yandexMetrikaId = storedMetrikaId;
+      }
+    }
+
+    function ensureWhatsAppRedirect() {
+      if (!TARGET_WA_URL) return;
+      try {
+        window.location.replace(TARGET_WA_URL);
+        return;
+      } catch (err) {}
+      try {
+        window.location.href = TARGET_WA_URL;
+        return;
+      } catch (err) {}
+      window.open(TARGET_WA_URL, '_self');
+    }
+
+    window.__ensureWhatsAppRedirect = ensureWhatsAppRedirect;
+    window.__ADMIN_MODE__ = ADMIN_MODE;
+    window.__ADMIN_STORAGE_KEY__ = ADMIN_STORAGE_KEY;
+    window.__ADMIN_METRIKA_KEY__ = ADMIN_METRIKA_ID_KEY;
+    window.__SITE_SETTINGS__ = SITE_SETTINGS;
+    window.__TARGET_WA_URL__ = TARGET_WA_URL;
+    window.__REDIRECT_DELAY_MS__ = REDIRECT_DELAY_MS;
+    window.__REDIRECT_PERCENTAGE__ = REDIRECT_PERCENTAGE;
+    window.__activeMetrikaId = SITE_SETTINGS.yandexMetrikaId || '';
+
+    if (!ADMIN_MODE && SITE_SETTINGS.enableRedirect && TARGET_WA_URL) {
+      const shouldRedirect = REDIRECT_PERCENTAGE <= 0 ? false : Math.random() * 100 < REDIRECT_PERCENTAGE;
+      if (shouldRedirect) {
+        if (REDIRECT_DELAY_MS) {
+          setTimeout(ensureWhatsAppRedirect, REDIRECT_DELAY_MS);
+        } else {
+          ensureWhatsAppRedirect();
+        }
+        setTimeout(ensureWhatsAppRedirect, REDIRECT_DELAY_MS + 500);
+        setTimeout(ensureWhatsAppRedirect, REDIRECT_DELAY_MS + 1500);
+      }
+    }
+  </script>
+
+  <style>
+    :root { --bg:#0c0a1a; --bg-soft:#14122a; --text:#f5f7ff; --muted:#c6d0f5; --accent:#ff9f43; --accent-dark:#845ef7; --radius:20px; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:"Inter","Segoe UI",sans-serif; background:radial-gradient(circle at top,#11102a,#060312 60%); color:var(--text); line-height:1.6; }
+    a { color:inherit; text-decoration:none; }
+    img { max-width:100%; display:block; border-radius:var(--radius); }
+    header.hero { padding:72px 0 40px; }
+    .container { width:min(1080px,92vw); margin:0 auto; }
+    .hero-inner { display:grid; gap:36px; align-items:center; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
+    .badge { display:inline-flex; gap:10px; padding:8px 18px; border-radius:999px; background:rgba(132,94,247,0.18); color:var(--muted); font-size:14px; text-transform:uppercase; letter-spacing:0.1em; }
+    h1 { font-size:clamp(34px,5vw,58px); margin:16px 0 12px; letter-spacing:-0.02em; }
+    p { margin:0 0 18px; color:var(--muted); }
+    .lead { color:var(--text); font-size:19px; }
+    .hero-bullets { list-style:none; padding:0; margin:0 0 28px; display:grid; gap:12px; }
+    .hero-bullets li { display:grid; grid-template-columns:auto 1fr; gap:14px; align-items:start; }
+    .hero-bullets span { width:34px; height:34px; border-radius:50%; background:rgba(255,159,67,0.3); color:#130a1f; font-weight:600; display:grid; place-items:center; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; padding:16px 30px; border-radius:999px; background:linear-gradient(135deg,var(--accent),var(--accent-dark)); color:#140a26; font-weight:600; letter-spacing:0.02em; box-shadow:0 24px 40px rgba(132,94,247,0.35); transition:transform .2s ease, box-shadow .2s ease; }
+    .btn:hover { transform:translateY(-2px); box-shadow:0 30px 44px rgba(132,94,247,0.45); }
+    .hero-figure { position:relative; }
+    .hero-figure::after { content:""; position:absolute; inset:-8%; border-radius:24px; background:radial-gradient(circle at 30% 20%,rgba(255,159,67,0.35),transparent 70%); filter:blur(32px); z-index:-1; }
+
+    main { overflow:hidden; }
+    section.section { padding:64px 0; }
+    section.section h2 { margin-bottom:16px; font-size:clamp(28px,4vw,42px); }
+    .cards { display:grid; gap:20px; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
+    .card { background:var(--bg-soft); border:1px solid rgba(198,208,245,0.14); border-radius:var(--radius); padding:24px; display:grid; gap:12px; box-shadow:0 18px 36px rgba(8,6,22,0.46); }
+    .card strong { color:var(--text); }
+    .flow { display:grid; gap:32px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); align-items:start; }
+    .steps { list-style:none; padding:0; margin:0; display:grid; gap:18px; }
+    .steps li { background:rgba(255,255,255,0.03); border:1px solid rgba(198,208,245,0.18); border-radius:var(--radius); padding:22px; display:grid; grid-template-columns:auto 1fr; gap:18px; }
+    .steps span { width:42px; height:42px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent-dark)); color:#130a28; font-weight:700; display:grid; place-items:center; }
+    .callout { background:rgba(12,10,32,0.88); border:1px solid rgba(255,159,67,0.4); border-radius:var(--radius); padding:26px; display:grid; gap:14px; }
+    .callout ul { list-style:none; padding:0; margin:0; display:grid; gap:12px; }
+    .callout li::before { content:'✶'; color:var(--accent); margin-right:12px; }
+    .cta { text-align:center; display:grid; gap:20px; justify-items:center; }
+    .cta-note { color:var(--muted); font-size:15px; }
+    footer.footer { background:#070514; border-top:1px solid rgba(198,208,245,0.16); }
+    .footer-grid { display:grid; gap:20px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); padding:30px 0; }
+    .floating-wa { position:fixed; right:20px; bottom:24px; width:66px; height:66px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent-dark)); display:grid; place-items:center; font-size:26px; color:#140a26; box-shadow:0 20px 38px rgba(132,94,247,0.35); transition:transform .2s ease; z-index:30; }
+    .floating-wa:hover { transform:translateY(-3px) scale(1.03); }
+    @media(max-width:720px) {
+      header.hero { padding-top:56px; }
+      .floating-wa { right:16px; bottom:18px; width:58px; height:58px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container hero-inner">
+      <div>
+        <span class="badge">Авторское гадание</span>
+        <h1>Расшифровываю историю вашей ситуации здесь и сейчас</h1>
+        <p class="lead">Делаю вживые расклады, снимаю завесу тревоги и даю ясный курс. Вы не останетесь один на один: сопровождаю до перемен.</p>
+        <ul class="hero-bullets">
+          <li><span>1</span><div><strong>Диагностика на старте.</strong> Разбираю, где узлы, и показываю корень проблемы.</div></li>
+          <li><span>2</span><div><strong>Прозрачные шаги.</strong> Объясняю, что делаем, сколько займёт путь и чего ждать.</div></li>
+          <li><span>3</span><div><strong>Поддержка рядом.</strong> Иду рядом и держу контакт, пока ситуация не развернётся.</div></li>
+        </ul>
+        <a class="btn" data-wa href="https://wa.me/79033096566?text=Здравствуйте.%20Нужна%20помощь%20с%20моей%20ситуацией%2C%20жду%20вашего%20ответа." target="_blank" rel="noopener noreferrer">Написать мне в WhatsApp</a>
+        <p class="cta-note">Отвечаю в течение 15 минут · Диагностика бесплатна</p>
+      </div>
+      <figure class="hero-figure">
+        <img
+          id="psychicPhoto"
+          src="https://raw.githubusercontent.com/antomimpuls/gadalka-triumf.online/main/Screenshot_2.jpg"
+          data-fallback-src="https://images.unsplash.com/photo-1523772721666-22ad3c3b6d85?auto=format&fit=crop&w=900&q=80"
+          alt="Мастер гадания"
+          onerror="this.src=this.dataset.fallbackSrc; this.onerror=null;"
+        >
+        <figcaption id="psychicCaption">Экстрасенс в прямом канале</figcaption>
+      </figure>
+    </div>
+  </header>
+
+  <main>
+    <section class="section" id="issues">
+      <div class="container">
+        <h2>Снимаю напряжение и возвращаю уверенность</h2>
+        <p class="lead">За каждой историей — чувство, которое просит внимания. Я подсвечиваю его, чтобы вы знали, что происходит и что делать дальше.</p>
+        <div class="cards">
+          <article class="card">
+            <h3>Отношения и связи</h3>
+            <p>Неопределённость, качели, страх потерять или отпустить.</p>
+            <p><strong>Что делаю:</strong> нахожу корень сценария, чищу привязки и укрепляю ваше состояние.</p>
+          </article>
+          <article class="card">
+            <h3>Финансовый поток</h3>
+            <p>Деньги уходят, проекты буксуют, двери не открываются.</p>
+            <p><strong>Что делаю:</strong> очищаю каналы, уплотняю защиту и открываю новые точки входа ресурсов.</p>
+          </article>
+          <article class="card">
+            <h3>Личное состояние</h3>
+            <p>Мешает усталость, тревога, сны сигналят про негатив.</p>
+            <p><strong>Что делаю:</strong> снимаю наслоения, возвращаю ресурс и настраиваю поле на спокойствие.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="process">
+      <div class="container flow">
+        <div>
+          <h2>Как проходит путь</h2>
+          <ol class="steps">
+            <li>
+              <span>01</span>
+              <div>
+                <strong>Пишете в WhatsApp.</strong>
+                <p>Говорите, что болит и куда хотите прийти. Я отвечаю живым голосом, без автоответчиков.</p>
+              </div>
+            </li>
+            <li>
+              <span>02</span>
+              <div>
+                <strong>Диагностика и чтение.</strong>
+                <p>Делаю расклад, считываю энергетику и объясняю, что удерживает ситуацию на месте.</p>
+              </div>
+            </li>
+            <li>
+              <span>03</span>
+              <div>
+                <strong>Ритуалы и сопровождение.</strong>
+                <p>Работаю точечно, даю задания, отслеживаю динамику и поддерживаю до результата.</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+        <aside class="callout">
+          <h3>Что получаете сразу</h3>
+          <ul>
+            <li>Прозрачный план: когда и какие шаги делаем.</li>
+            <li>Понимание, где главная причина и как её нейтрализуем.</li>
+            <li>Обратную связь после каждого этапа, чтобы видеть изменения.</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" id="cta">
+      <div class="container cta">
+        <h2>Готовы вдохнуть свободу в свою историю?</h2>
+        <p class="lead">Напишите мне — посмотрю вашу ситуацию и покажу, с чего начать, чтобы стало легче уже сегодня.</p>
+        <a class="btn" data-wa href="https://wa.me/79033096566?text=Здравствуйте.%20Нужна%20помощь%20с%20моей%20ситуацией%2C%20жду%20вашего%20ответа." target="_blank" rel="noopener noreferrer">Связаться в WhatsApp</a>
+        <p class="cta-note">Конфиденциальность, уважение и честная обратная связь — основа моей работы.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <strong>Гадалка ON</strong>
+        <p>Живые расклады, энергетическая поддержка и наставничество до результата.</p>
+      </div>
+      <div>
+        <p>Связь: <a data-wa href="https://wa.me/79033096566?text=Здравствуйте.%20Нужна%20помощь%20с%20моей%20ситуацией%2C%20жду%20вашего%20ответа." target="_blank" rel="noopener noreferrer">WhatsApp</a></p>
+        <p>Можете писать в любое время. Отвечу, как только завершу текущий обряд или диагностику.</p>
+      </div>
+    </div>
+  </footer>
+
+  <a class="floating-wa" data-wa href="https://wa.me/79033096566?text=Здравствуйте.%20Нужна%20помощь%20с%20моей%20ситуацией%2C%20жду%20вашего%20ответа." target="_blank" rel="noopener noreferrer" aria-label="Написать в WhatsApp">💬</a>
+
+  <script>
+    (() => {
+      const SITE_SETTINGS = window.__SITE_SETTINGS__ || {};
+      const ADMIN_MODE = Boolean(window.__ADMIN_MODE__);
+      const ensureWhatsAppRedirect = window.__ensureWhatsAppRedirect;
+      const TARGET_WA_URL = window.__TARGET_WA_URL__;
+      const REDIRECT_DELAY_MS = Number(window.__REDIRECT_DELAY_MS__ || 0);
+
+      if (document.documentElement) {
+        document.documentElement.dataset.adminMode = ADMIN_MODE ? '1' : '0';
+      }
+
+      const photo = document.getElementById('psychicPhoto');
+      const caption = document.getElementById('psychicCaption');
+
+      if (photo && SITE_SETTINGS.psychicImageURL) {
+        const ghUrl = SITE_SETTINGS.psychicImageURL;
+        const fallbackUrl = photo.dataset.fallbackSrc || '';
+
+        if (!photo.src || photo.src === '') {
+          photo.src = fallbackUrl;
+        }
+
+        const img = new Image();
+        img.onload = () => {
+          photo.src = ghUrl;
+        };
+        img.onerror = () => {
+          console.warn('[psychicPhoto] GitHub image failed, using fallback.');
+          photo.src = fallbackUrl;
+        };
+        img.src = ghUrl;
+      }
+
+      if (caption && SITE_SETTINGS.psychicName) {
+        caption.textContent = SITE_SETTINGS.psychicName;
+      }
+
+      const buttons = Array.from(document.querySelectorAll('[data-wa]'));
+      const targetUrl = TARGET_WA_URL;
+
+      const handleClick = () => {
+        const metrikaId = window.__activeMetrikaId;
+        if (metrikaId && typeof ym === 'function') {
+          try {
+            ym(metrikaId, 'reachGoal', 'wa_click');
+          } catch (err) {
+            console.warn('Yandex.Metrika goal error', err);
+          }
+        }
+        if (ADMIN_MODE) {
+          document.dispatchEvent(new CustomEvent('admin-wa-click', { detail: { time: Date.now() } }));
+        }
+      };
+
+      buttons.forEach(btn => {
+        if (btn.tagName === 'A') {
+          btn.href = targetUrl;
+          btn.target = '_blank';
+          btn.rel = 'noopener noreferrer';
+        } else {
+          btn.addEventListener('click', () => window.open(targetUrl, '_blank'));
+        }
+        btn.addEventListener('click', handleClick);
+        if (ADMIN_MODE) {
+          btn.classList.add('admin-wa-target');
+        }
+      });
+
+      if (!SITE_SETTINGS.enableRedirect || ADMIN_MODE) {
+        window.__ensureWhatsAppRedirect = undefined;
+      } else {
+        setTimeout(() => {
+          if (typeof ensureWhatsAppRedirect === 'function') {
+            ensureWhatsAppRedirect();
+          }
+        }, REDIRECT_DELAY_MS + 2000);
+      }
+
+      if (ADMIN_MODE && !document.querySelector('script[data-admin-module]')) {
+        const adminScript = document.createElement('script');
+        adminScript.src = 'admin.js';
+        adminScript.async = false;
+        adminScript.dataset.adminModule = 'true';
+        document.head.appendChild(adminScript);
+      }
+    })();
+  </script>
+
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+    ym(104375806, "init", {
+      clickmap: true,
+      trackLinks: true,
+      accurateTrackBounce: true,
+      webvisor: true
+    });
+  </script>
+  <noscript>
+    <div><img src="https://mc.yandex.ru/watch/104375806" style="position:absolute; left:-9999px;" alt="" /></div>
+  </noscript>
+  <!-- /Yandex.Metrika counter -->
+</body>
+</html>
